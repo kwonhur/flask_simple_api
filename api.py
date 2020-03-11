@@ -12,12 +12,12 @@ SORTBY = ["id", "reads", "likes", "popularity"]
 DIRECTION = ["desc", "asc"]
 
 def process_tags(tags) -> list:
-    if tags == None or "":
+    if tags == None or tags == "":
         abort(400, error="Tags parameter is required")
     return (tags).split(",")
 
 def validate_sortBy(sortBy):
-    if sortBy != None or "":
+    if sortBy != None or sortBy == "":
         if sortBy not in SORTBY:
             abort(400, error="sortBy parameter is invalid")
         else:
@@ -26,7 +26,7 @@ def validate_sortBy(sortBy):
         return "id"
 
 def validate_direction(direction):
-    if direction != None or "":
+    if direction != None or direction == "":
         if direction not in DIRECTION:
             abort(400, error="sortBy parameter is invalid") #same message as validate_sortBy per documentation
         else:
@@ -34,13 +34,9 @@ def validate_direction(direction):
     else:
         return False
 
-parser = reqparse.RequestParser()
-parser.add_argument('task')
-
-
 # Posts
 class Posts(Resource):
-    @cache.cached(timeout=50)
+    @cache.cached(timeout=10, query_string=True)
     def get(self):
         tags = request.args.get("tags")
         sortBy = request.args.get("sortBy")
@@ -49,7 +45,7 @@ class Posts(Resource):
         sortBy = validate_sortBy(sortBy)
         direction = validate_direction(direction)
         parsed_dict_list = parse(tags)
-        response =  {"posts": sorted(parsed_dict_list, key=itemgetter(sortBy), reverse=direction)}
+        response =  jsonify({"posts": sorted(parsed_dict_list, key=itemgetter(sortBy), reverse=direction)})
         response.status_code = 200
         return response
 
