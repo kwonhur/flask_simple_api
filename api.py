@@ -87,5 +87,4 @@ api.add_resource(Ping, '/api/ping')
 
 
 if __name__ == '__main__':
-    parse(["history"])
     app.run(debug=True)
