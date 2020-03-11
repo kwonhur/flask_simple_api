@@ -11,5 +11,5 @@ def parse(tags) -> list:
             response_obj = future.result()
             for post in json.loads(response_obj.text)["posts"]:
                 final_list.append(post)
-        return list({v["id"]:v for v in final_list}.values())
+    return list({v["id"]:v for v in final_list}.values())
 
